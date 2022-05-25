@@ -1,0 +1,52 @@
+<html>
+    <title>
+		KRM Fn wasm PoC
+	</title>
+	<head>
+		<meta charset="utf-8"/>
+		<script src="wasm_exec.js"></script>
+		<script>
+			const go = new Go();
+			function evaluateSetNs() {
+				WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+					go.run(result.instance);
+				});
+			}
+		</script>
+	</head>
+	<body>
+	<h1>Input</h1>
+	<br>
+	<textarea id="krmfninput" name="krmfninput" rows="30" cols="80">apiVersion: config.kubernetes.io/v1
+kind: ResourceList
+items:
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: the-service
+      namespace: old
+      annotations:
+        config.kubernetes.io/index: '0'
+        config.kubernetes.io/path: 'resources.yaml'
+        internal.config.kubernetes.io/index: '0'
+        internal.config.kubernetes.io/path: 'resources.yaml'
+        internal.config.kubernetes.io/seqindent: 'compact'
+functionConfig:
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: fn-config
+    annotations:
+      config.kubernetes.io/local-config: "true"
+  data:
+    namespace: new
+</textarea>
+	<br>
+	<input id="evaluate" type="button" value="clickme" onclick="evaluateSetNs();" />
+	<br>
+	<h1>Output</h1>
+	<br>
+	<textarea id="krmfnoutput" name="krmfnoutput" rows="30" cols="80">KRM function output</textarea>
+	</body>
+</html>
+
